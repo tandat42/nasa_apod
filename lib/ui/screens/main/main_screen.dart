@@ -6,7 +6,7 @@ import 'package:nasa_apod/core/data/media_type.dart';
 import 'package:nasa_apod/ui/navigation/router.dart';
 import 'package:nasa_apod/ui/screens/image_viewer/image_viewer_screen.dart';
 import 'package:nasa_apod/ui/screens/main/main_screen_provider.dart';
-import 'package:nasa_apod/ui/utils/text_utils.dart';
+import 'package:nasa_apod/ui/widgets/error_widget.dart';
 import 'package:nasa_apod/ui/widgets/progress_widget.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
@@ -36,10 +36,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           data: (apod) => _MainContentWidget(
             apod: apod,
             onImageTap: _onImageTap,
-            errorWidget: _MainErrorWidget(onTryAgainTap: _onTryAgainTap),
+            onTryAgainTap: _onTryAgainTap,
           ),
           loading: () => const ProgressWidget(),
-          error: (e, _) => _MainErrorWidget(onTryAgainTap: _onTryAgainTap),
+          error: (e, _) => ApodErrorWidget(error: e, onTryAgainTap: _onTryAgainTap),
         ),
       ),
     );
@@ -47,11 +47,15 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 }
 
 class _MainContentWidget extends StatefulWidget {
-  const _MainContentWidget({required this.apod, required this.onImageTap, required this.errorWidget});
+  const _MainContentWidget({
+    required this.apod,
+    required this.onImageTap,
+    required this.onTryAgainTap,
+  });
 
   final Apod apod;
   final ImageTapCallback onImageTap;
-  final Widget errorWidget;
+  final VoidCallback onTryAgainTap;
 
   String get _imageUrl => apod.mediaType == MediaType.video ? apod.thumbnailUrl! : apod.url;
 
@@ -134,7 +138,7 @@ class _MainContentWidgetState extends State<_MainContentWidget> {
                     : const ProgressWidget();
               },
               progressIndicatorBuilder: (context, _, __) => const ProgressWidget(),
-              errorWidget: (context, _, __) => widget.errorWidget,
+              errorWidget: (context, _, e) => ApodErrorWidget(error: e, onTryAgainTap: widget.onTryAgainTap),
             ),
           ),
           Expanded(
@@ -151,28 +155,6 @@ class _MainContentWidgetState extends State<_MainContentWidget> {
         ],
       );
     });
-  }
-}
-
-class _MainErrorWidget extends StatelessWidget {
-  const _MainErrorWidget({required this.onTryAgainTap});
-
-  final VoidCallback onTryAgainTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(TextUtils.getErrorMessage(context)),
-        SizedBox(height: 24),
-        ElevatedButton(
-          onPressed: onTryAgainTap,
-          child: Text('Try again'),
-        )
-      ],
-    );
   }
 }
 

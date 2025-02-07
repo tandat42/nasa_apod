@@ -19,9 +19,9 @@ class MainRoute extends GoRouteData {
 class ImageViewerRoute extends GoRouteData {
   const ImageViewerRoute(this.imageUrl, {required this.width, required this.height});
 
-  final String imageUrl;
-  final int width;
-  final int height;
+  final String? imageUrl;
+  final int? width;
+  final int? height;
 
   @override
   CustomTransitionPage<void> buildPage(
