@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:nasa_apod/core/data/apod.dart';
 import 'package:nasa_apod/core/resolvers/api_resolver.dart';
+import 'package:nasa_apod/core/utils/date_utils.dart';
 
 @singleton
 class ApiService {
@@ -12,16 +13,16 @@ class ApiService {
   final ApiResolver _resolver;
 
   Future<Apod> getApod() async {
-    var apod = await _resolver.getApod();
+    var apod = await _resolver.getApod(DateUtils.getApodDate());
 
     if (!kIsWeb) {
       return apod;
     } else {
-      final url = '$_webCorsProxyUrl${apod.url}';
-      final thumbnailUrl = (apod.thumbnailUrl?.isNotEmpty ?? false)
-          ? '$_webCorsProxyUrl${apod.thumbnailUrl}'
+      final receivedImageUrl = apod.imageUrl;
+      final corsImageUrl = (receivedImageUrl?.isNotEmpty ?? false)
+          ? '$_webCorsProxyUrl$receivedImageUrl'
           : null;
-      return apod.copyWith(url: url, thumbnailUrl: thumbnailUrl);
+      return apod.copyWith(imageUrl: corsImageUrl);
     }
   }
 }

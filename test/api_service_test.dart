@@ -3,9 +3,9 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dio/dio.dart';
 import 'package:nasa_apod/core/data/apod.dart';
-import 'package:nasa_apod/core/data/media_type.dart';
 import 'package:nasa_apod/core/resolvers/api_resolver.dart';
 import 'package:nasa_apod/core/services/api_service.dart';
+import 'package:nasa_apod/core/utils/date_utils.dart';
 
 import 'api_service_test.mocks.dart';
 
@@ -19,29 +19,29 @@ void main() {
     apiService = ApiService(mockApiResolver);
   });
 
-  test('getApod() should return Apod data from ApiResolver', () async {
+  test('getApod() should return Apod data from ApiResolver for today\'s APOD date', () async {
     // Arrange
     final apod = Apod(
-      mediaType: MediaType.image,
       title: 'Galaxy Image',
-      url: 'https://example.com/image.jpg',
-      thumbnailUrl: 'https://example.com/thumb.jpg',
+      explanation: 'A galaxy far away.',
+      imageUrl: 'https://example.com/image.jpg',
     );
+    final date = DateUtils.getApodDate();
 
-    when(mockApiResolver.getApod(thumbs: 'True')).thenAnswer((_) async => apod);
+    when(mockApiResolver.getApod(date)).thenAnswer((_) async => apod);
 
     // Act
     final result = await apiService.getApod();
 
     // Assert
     expect(result, equals(apod));
-    verify(mockApiResolver.getApod(thumbs: 'True')).called(1);
+    verify(mockApiResolver.getApod(date)).called(1);
   });
 
   test('getApod() should throw an exception when ApiResolver fails', () async {
     // Arrange
-    when(mockApiResolver.getApod(thumbs: 'True')).thenThrow(DioException(
-      requestOptions: RequestOptions(path: '/planetary/apod'),
+    when(mockApiResolver.getApod(any)).thenThrow(DioException(
+      requestOptions: RequestOptions(path: '/wp-json/wp/v2/apod-basic'),
     ));
 
     // Act & Assert

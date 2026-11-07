@@ -8,7 +8,7 @@ import '../screens/main/main_screen.dart';
 part 'router.g.dart';
 
 @TypedGoRoute<MainRoute>(path: '/')
-class MainRoute extends GoRouteData {
+class MainRoute extends GoRouteData with $MainRoute {
   const MainRoute();
 
   @override
@@ -16,8 +16,12 @@ class MainRoute extends GoRouteData {
 }
 
 @TypedGoRoute<ImageViewerRoute>(path: '/image_viewer')
-class ImageViewerRoute extends GoRouteData {
-  const ImageViewerRoute(this.imageUrl, {required this.width, required this.height});
+class ImageViewerRoute extends GoRouteData with $ImageViewerRoute {
+  const ImageViewerRoute(
+    this.imageUrl, {
+    required this.width,
+    required this.height,
+  });
 
   final String? imageUrl;
   final int? width;
@@ -29,12 +33,13 @@ class ImageViewerRoute extends GoRouteData {
     GoRouterState state,
   ) {
     return CustomTransitionPage<void>(
-        key: state.pageKey,
-        child: ImageViewerScreen(imageUrl, width: width, height: height),
-        transitionDuration: const Duration(milliseconds: 350),
-        reverseTransitionDuration: const Duration(milliseconds: 350),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            FadeTransition(opacity: animation, child: child));
+      key: state.pageKey,
+      child: ImageViewerScreen(imageUrl, width: width, height: height),
+      transitionDuration: const Duration(milliseconds: 350),
+      reverseTransitionDuration: const Duration(milliseconds: 350),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+          FadeTransition(opacity: animation, child: child),
+    );
   }
 }
 

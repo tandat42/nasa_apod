@@ -9,13 +9,13 @@ import 'package:retrofit/retrofit.dart';
 part 'api_resolver.g.dart';
 
 @singleton
-@RestApi(baseUrl: 'https://api.nasa.gov')
+@RestApi(baseUrl: 'https://science.nasa.gov')
 abstract class ApiResolver {
   @factoryMethod
   factory ApiResolver(Dio dio) = _ApiResolver;
 
-  @GET('/planetary/apod')
-  Future<Apod> getApod({@Query('thumbs') String thumbs = 'True'});
+  @GET('/wp-json/wp/v2/apod-basic/{date}')
+  Future<Apod> getApod(@Path() String date);
 }
 
 @module
@@ -27,7 +27,7 @@ abstract class ApiResolverModule {
 }
 
 class ApiKeyInterceptor extends Interceptor {
-  static const _apiKey = 'IHE6wfIXbhRbcJKIZQTcJt0MmvCPQffEa3Ox70ey';
+  static const _apiKey = 'kGjbFgzNmFJWrFQwmpLPKbhGBWMCTNGjPd7RRTDn';
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {

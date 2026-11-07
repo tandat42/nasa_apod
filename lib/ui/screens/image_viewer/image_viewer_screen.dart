@@ -23,7 +23,9 @@ class ImageViewerScreen extends StatelessWidget {
     if (imageUrl == null || width == null || height == null) {
       return Material(
         child: Center(
-          child: Text('Failed to show image, please open page with valid parameters'),
+          child: Text(
+            'Failed to show image, please open page with valid parameters',
+          ),
         ),
       );
     }
@@ -103,33 +105,45 @@ class _ImageViewerContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final minScale = math.min(constraints.maxWidth / width, constraints.maxHeight / height) / 2;
-      final maxScale = math.max(width / constraints.maxWidth, height / constraints.maxHeight) * 4;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final minScale =
+            math.min(
+              constraints.maxWidth / width,
+              constraints.maxHeight / height,
+            ) /
+            2;
+        final maxScale =
+            math.max(
+              width / constraints.maxWidth,
+              height / constraints.maxHeight,
+            ) *
+            4;
 
-      return InteractiveViewer(
-        constrained: true,
-        minScale: minScale,
-        maxScale: maxScale,
-        child: Container(
-          alignment: Alignment.center,
-          width: constraints.maxWidth,
-          height: constraints.maxHeight,
-          child: FittedBox(
-            fit: BoxFit.contain,
-            child: Hero(
-              tag: ImageViewerScreen.heroTag,
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.cover,
-                alignment: Alignment.center,
-                width: width.toDouble(),
-                height: height.toDouble(),
+        return InteractiveViewer(
+          constrained: true,
+          minScale: minScale,
+          maxScale: maxScale,
+          child: Container(
+            alignment: Alignment.center,
+            width: constraints.maxWidth,
+            height: constraints.maxHeight,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Hero(
+                tag: ImageViewerScreen.heroTag,
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.center,
+                  width: width.toDouble(),
+                  height: height.toDouble(),
+                ),
               ),
             ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }

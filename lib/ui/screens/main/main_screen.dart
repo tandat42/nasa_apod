@@ -1,12 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nasa_apod/core/data/apod.dart';
-import 'package:nasa_apod/core/data/media_type.dart';
 import 'package:nasa_apod/ui/navigation/router.dart';
 import 'package:nasa_apod/ui/screens/image_viewer/image_viewer_screen.dart';
 import 'package:nasa_apod/ui/screens/main/main_screen_provider.dart';
 import 'package:nasa_apod/ui/widgets/error_widget.dart';
+import 'package:nasa_apod/ui/widgets/no_image_widget.dart';
 import 'package:nasa_apod/ui/widgets/progress_widget.dart';
 
 class MainScreen extends ConsumerStatefulWidget {
@@ -17,7 +18,11 @@ class MainScreen extends ConsumerStatefulWidget {
 }
 
 class _MainScreenState extends ConsumerState<MainScreen> {
-  void _onImageTap(String url, {required int imageWidth, required int imageHeight}) {
+  void _onImageTap(
+    String url, {
+    required int imageWidth,
+    required int imageHeight,
+  }) {
     ImageViewerRoute(url, width: imageWidth, height: imageHeight).push(context);
   }
 
@@ -39,7 +44,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             onTryAgainTap: _onTryAgainTap,
           ),
           loading: () => const ProgressWidget(),
-          error: (e, _) => ApodErrorWidget(error: e, onTryAgainTap: _onTryAgainTap),
+          error: (e, _) =>
+              ApodErrorWidget(error: e, onTryAgainTap: _onTryAgainTap),
         ),
       ),
     );
@@ -57,14 +63,14 @@ class _MainContentWidget extends StatefulWidget {
   final ImageTapCallback onImageTap;
   final VoidCallback onTryAgainTap;
 
-  String get _imageUrl => apod.mediaType == MediaType.video ? apod.thumbnailUrl! : apod.url;
+  String? get _imageUrl => apod.imageUrl;
 
   @override
   State<_MainContentWidget> createState() => _MainContentWidgetState();
 }
 
 class _MainContentWidgetState extends State<_MainContentWidget> {
-  late String _imageUrl;
+  late String? _imageUrl;
 
   int? _imageWidth;
   int? _imageHeight;
@@ -89,7 +95,11 @@ class _MainContentWidgetState extends State<_MainContentWidget> {
   }
 
   void _onImageTap() {
-    widget.onImageTap(_imageUrl, imageWidth: _imageWidth!, imageHeight: _imageHeight!);
+    widget.onImageTap(
+      _imageUrl!,
+      imageWidth: _imageWidth!,
+      imageHeight: _imageHeight!,
+    );
   }
 
   void _getImageSize(ImageProvider provider) {
@@ -100,7 +110,9 @@ class _MainContentWidgetState extends State<_MainContentWidget> {
       final resolvedWidth = info.image.width;
       final resolvedHeight = info.image.height;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if ((_imageWidth != resolvedWidth || _imageHeight == resolvedHeight) && imageUrl == _imageUrl && mounted) {
+        if ((_imageWidth != resolvedWidth || _imageHeight == resolvedHeight) &&
+            imageUrl == _imageUrl &&
+            mounted) {
           setState(() {
             _imageWidth = resolvedWidth;
             _imageHeight = resolvedHeight;
@@ -114,48 +126,74 @@ class _MainContentWidgetState extends State<_MainContentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final imageWidgetHeight = constraints.maxHeight / 2;
-      final freeSpaceHeight = imageWidgetHeight / 2;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final viewPadding = MediaQuery.viewPaddingOf(context);
+        final imageWidgetHeight = constraints.maxHeight / 2 + viewPadding.top;
+        final imageUrl = _imageUrl;
 
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(height: freeSpaceHeight),
-          Hero(
-            tag: ImageViewerScreen.heroTag,
-            child: CachedNetworkImage(
-              imageUrl: _imageUrl,
-              height: imageWidgetHeight,
-              imageBuilder: (context, provider) {
-                if (!_imageDisplayAllowed) _getImageSize(provider);
-
-                return _imageDisplayAllowed
-                    ? GestureDetector(
-                        onTap: _onImageTap,
-                        child: Image(image: provider, fit: BoxFit.cover),
-                      )
-                    : const ProgressWidget();
-              },
-              progressIndicatorBuilder: (context, _, __) => const ProgressWidget(),
-              errorWidget: (context, _, e) => ApodErrorWidget(error: e, onTryAgainTap: widget.onTryAgainTap),
-            ),
+        return ListView(
+          padding: EdgeInsets.fromLTRB(
+            constraints.maxWidth / 16,
+            imageWidgetHeight / 8 + viewPadding.top,
+            constraints.maxWidth / 16,
+            imageWidgetHeight / 8 + viewPadding.bottom,
           ),
-          Expanded(
-            child: Container(
-              alignment: Alignment.topCenter,
-              padding: const EdgeInsets.all(12),
-              child: Text(
-                widget.apod.title,
-                softWrap: true,
-                overflow: TextOverflow.ellipsis,
+          children: [
+            imageUrl != null
+                ? Hero(
+                    tag: ImageViewerScreen.heroTag,
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      height: imageWidgetHeight,
+                      imageBuilder: (context, provider) {
+                        if (!_imageDisplayAllowed) _getImageSize(provider);
+
+                        return _imageDisplayAllowed
+                            ? GestureDetector(
+                                onTap: _onImageTap,
+                                child: Image(
+                                  image: provider,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : const ProgressWidget();
+                      },
+                      progressIndicatorBuilder: (context, _, _) =>
+                          const ProgressWidget(),
+                      errorWidget: (context, _, e) => ApodErrorWidget(
+                        error: e,
+                        onTryAgainTap: widget.onTryAgainTap,
+                      ),
+                    ),
+                  )
+                : NoImageWidget(onTryAgainTap: widget.onTryAgainTap),
+            Expanded(
+              child: Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  spacing: 12,
+                  children: [
+                    Text(
+                      widget.apod.title,
+                      softWrap: true,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    HtmlWidget(widget.apod.explanation),
+                  ],
+                ),
               ),
             ),
-          )
-        ],
-      );
-    });
+          ],
+        );
+      },
+    );
   }
 }
 
-typedef ImageTapCallback = void Function(String, {required int imageWidth, required int imageHeight});
+typedef ImageTapCallback = void Function(
+  String, {
+  required int imageWidth,
+  required int imageHeight,
+});

@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nasa_apod/core/data/apod.dart';
-import 'package:nasa_apod/core/data/media_type.dart';
 import 'package:nasa_apod/core/services/api_service.dart';
 import 'package:nasa_apod/di.dart';
 import 'package:nasa_apod/ui/screens/main/main_screen_provider.dart';
@@ -33,10 +32,9 @@ void main() {
   test('getApod provider should return Apod data from ApiService', () async {
     // Arrange
     final apod = Apod(
-      mediaType: MediaType.image,
       title: 'Galaxy Image',
-      url: 'https://example.com/image.jpg',
-      thumbnailUrl: 'https://example.com/thumb.jpg',
+      explanation: 'A galaxy far away.',
+      imageUrl: 'https://example.com/image.jpg',
     );
 
     when(mockApiService.getApod()).thenAnswer((_) async => apod);
