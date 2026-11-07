@@ -1,11 +1,11 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:nasa_apod/core/data/apod.dart';
 import 'package:nasa_apod/core/services/api_service.dart';
 import 'package:nasa_apod/di.dart';
-import 'package:nasa_apod/ui/screens/main/main_screen_provider.dart';
-import 'package:riverpod/riverpod.dart';
+import 'package:nasa_apod/ui/screens/main/providers/latest_apod_provider.dart';
 
 import 'main_screen_provider_test.mocks.dart';
 
@@ -21,12 +21,12 @@ void main() {
     getIt.registerSingleton<ApiService>(mockApiService);
 
     // Create a Riverpod container
-    container = ProviderContainer();
+    container = ProviderContainer(retry: (_, _) => null);
   });
 
-  tearDown(() {
+  tearDown(() async {
     container.dispose();
-    getIt.reset();
+    await getIt.reset();
   });
 
   test('getApod provider should return Apod data from ApiService', () async {
@@ -40,7 +40,7 @@ void main() {
     when(mockApiService.getApod()).thenAnswer((_) async => apod);
 
     // Act
-    final result = await container.read(getApodProvider.future);
+    final result = await container.read(latestApodProvider.future);
 
     // Assert
     expect(result, equals(apod));
@@ -51,11 +51,12 @@ void main() {
     'getApod provider should throw an exception when ApiService fails',
     () async {
       // Arrange
-      when(mockApiService.getApod()).thenThrow(Exception('API Error'));
+      when(mockApiService.getApod())
+          .thenAnswer((_) async => throw Exception('API Error'));
 
       // Act & Assert
-      expect(
-        () async => await container.read(getApodProvider.future),
+      await expectLater(
+        container.read(latestApodProvider.future),
         throwsA(isA<Exception>()),
       );
       verify(mockApiService.getApod()).called(1);

@@ -4,13 +4,14 @@ import 'package:mockito/mockito.dart';
 import 'package:dio/dio.dart';
 import 'package:nasa_apod/core/data/api_exception.dart';
 import 'package:nasa_apod/core/data/apod.dart';
+import 'package:nasa_apod/core/env/env.dart';
 import 'package:nasa_apod/core/resolvers/api_resolver.dart';
 
 import 'api_resolver_test.mocks.dart';
 
 @GenerateMocks([Dio])
 void main() {
-  const date = '261107';
+  const path = '/wp-json/wp/v2/apod-basic';
 
   late MockDio mockDio;
   late ApiResolver apiResolver;
@@ -23,49 +24,45 @@ void main() {
     apiResolver = ApiResolver(mockDio);
   });
 
-  test('getApod should return Apod object on success', () async {
+  test('getApods should return Apod list on success', () async {
     // Arrange
-    final jsonResponse = {
-      'title': 'Galaxy Image',
-      'explanation': 'A galaxy far away.',
-      'hdurl': 'https://example.com/image.jpg',
-    };
-
-    final requestOptions = RequestOptions(
-      path: '/wp-json/wp/v2/apod-basic/$date',
-    );
+    final jsonResponse = [
+      {
+        'title': 'Galaxy Image',
+        'explanation': 'A galaxy far away.',
+        'hdurl': 'https://example.com/image.jpg',
+      },
+    ];
 
     final response = Response(
-      requestOptions: requestOptions,
+      requestOptions: RequestOptions(path: path),
       data: jsonResponse,
       statusCode: 200,
     );
 
-    when(mockDio.fetch<Map<String, dynamic>>(any))
-        .thenAnswer((_) async => response);
+    when(mockDio.fetch<List<dynamic>>(any)).thenAnswer((_) async => response);
 
     // Act
-    final result = await apiResolver.getApod(date);
+    final result = await apiResolver.getApods();
 
     // Assert
-    expect(result, isA<Apod>());
-    expect(result.title, equals('Galaxy Image'));
-    expect(result.explanation, equals('A galaxy far away.'));
-    expect(result.imageUrl, equals('https://example.com/image.jpg'));
+    expect(result, hasLength(1));
+    expect(result.single, isA<Apod>());
+    expect(result.single.title, equals('Galaxy Image'));
+    expect(result.single.explanation, equals('A galaxy far away.'));
+    expect(result.single.imageUrl, equals('https://example.com/image.jpg'));
 
     final options =
-        verify(mockDio.fetch<Map<String, dynamic>>(captureAny)).captured.single
+        verify(mockDio.fetch<List<dynamic>>(captureAny)).captured.single
             as RequestOptions;
-    expect(options.path, equals('/wp-json/wp/v2/apod-basic/$date'));
+    expect(options.path, equals(path));
+    expect(options.queryParameters, equals({'page': 1, 'per_page': 1}));
   });
 
   test('ApiKeyInterceptor should add API key to requests', () async {
     // Arrange
     final interceptor = ApiKeyInterceptor();
-    final options = RequestOptions(
-      path: '/wp-json/wp/v2/apod-basic/$date',
-      queryParameters: {},
-    );
+    final options = RequestOptions(path: path, queryParameters: {});
 
     final handler = RequestInterceptorHandler();
 
@@ -74,44 +71,105 @@ void main() {
 
     // Assert
     expect(options.queryParameters.containsKey('api_key'), true);
-    expect(
-      options.queryParameters['api_key'],
-      equals('kGjbFgzNmFJWrFQwmpLPKbhGBWMCTNGjPd7RRTDn'),
-    );
+    expect(options.queryParameters['api_key'], equals(Env.nasaApiKey));
   });
 
   test(
-    'ApiResultExceptionInterceptor should throw ApiException on failure',
+    'ApiResultExceptionInterceptor should reject with ApiException on failure',
     () async {
       // Arrange
-      final interceptor = ApiResultExceptionInterceptor();
+      final interceptor = ApiResultInterceptor();
       final response = Response(
-        requestOptions: RequestOptions(path: '/wp-json/wp/v2/apod-basic/$date'),
+        requestOptions: RequestOptions(path: path),
         statusCode: 500,
       );
 
-      final handler = ResponseInterceptorHandler();
+      final handler = _RecordingResponseHandler();
 
-      // Act & Assert
-      expect(
-        () => interceptor.onResponse(response, handler),
-        throwsA(isA<ApiException>()),
-      );
+      // Act
+      interceptor.onResponse(response, handler);
+
+      // Assert
+      expect(handler.rejected?.error, isA<ApiException>());
+      expect(handler.passed, isNull);
     },
   );
 
-  test('getApod should throw an error on API failure', () async {
+  test(
+    'ApiResultExceptionInterceptor should pass through successful responses',
+    () async {
+      // Arrange
+      final interceptor = ApiResultInterceptor();
+      final response = Response(
+        requestOptions: RequestOptions(path: path),
+        statusCode: 200,
+      );
+
+      final handler = _RecordingResponseHandler();
+
+      // Act
+      interceptor.onResponse(response, handler);
+
+      // Assert
+      expect(handler.passed, same(response));
+      expect(handler.rejected, isNull);
+    },
+  );
+
+  test(
+    'ApiResultExceptionInterceptor should forward errors unchanged',
+    () async {
+      // Arrange
+      final interceptor = ApiResultInterceptor();
+      final error = DioException(requestOptions: RequestOptions(path: path));
+
+      final handler = _RecordingErrorHandler();
+
+      // Act
+      interceptor.onError(error, handler);
+
+      // Assert
+      expect(handler.passed, same(error));
+    },
+  );
+
+  test('getApods should throw an error on API failure', () async {
     // Arrange
-    final requestOptions = RequestOptions(
-      path: '/wp-json/wp/v2/apod-basic/$date',
+    when(mockDio.fetch<List<dynamic>>(any)).thenAnswer(
+      (_) async =>
+          throw DioException(requestOptions: RequestOptions(path: path)),
     );
 
-    when(mockDio.fetch<Map<String, dynamic>>(any))
-        .thenThrow(DioException(requestOptions: requestOptions));
-
     // Act & Assert
-    await expectLater(apiResolver.getApod(date), throwsA(isA<DioException>()));
+    await expectLater(apiResolver.getApods(), throwsA(isA<DioException>()));
 
-    verify(mockDio.fetch<Map<String, dynamic>>(any)).called(1);
+    verify(mockDio.fetch<List<dynamic>>(any)).called(1);
   });
+}
+
+class _RecordingResponseHandler extends ResponseInterceptorHandler {
+  DioException? rejected;
+  Response? passed;
+
+  @override
+  void reject(
+    DioException error, [
+    bool callFollowingErrorInterceptor = false,
+  ]) {
+    rejected = error;
+  }
+
+  @override
+  void next(Response response) {
+    passed = response;
+  }
+}
+
+class _RecordingErrorHandler extends ErrorInterceptorHandler {
+  DioException? passed;
+
+  @override
+  void next(DioException error) {
+    passed = error;
+  }
 }

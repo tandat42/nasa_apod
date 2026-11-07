@@ -40,6 +40,8 @@ build/*
 *.freezed.dart
 *.mocks.dart
 
+.env
+
 # Symbolication related
 app.*.symbols
 
