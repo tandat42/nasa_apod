@@ -5,12 +5,8 @@ import 'package:nasa_apod/core/resolvers/api_resolver.dart';
 import 'package:nasa_apod/core/utils/date_utils.dart';
 
 @singleton
-class ApiService {
-  ApiService(this._resolver);
-
+class ApiService(final ApiResolver _resolver) {
   static const _webCorsProxyUrl = 'https://cors-anywhere.herokuapp.com/';
-
-  final ApiResolver _resolver;
 
   Future<Apod> getApod() async {
     var apod = await _resolver.getApod(DateUtils.getApodDate());

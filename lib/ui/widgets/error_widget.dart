@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:nasa_apod/ui/utils/text_utils.dart';
 
-class ApodErrorWidget extends StatelessWidget {
-  const ApodErrorWidget({
-    super.key,
-    required this.onTryAgainTap,
-    required this.error,
-  });
-
-  final Object error;
-  final VoidCallback onTryAgainTap;
-
+class const ApodErrorWidget({
+  super.key,
+  required final VoidCallback onTryAgainTap,
+  required final Object error,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: .center,
+      spacing: 24,
       children: [
         Text(TextUtils.getErrorMessage(context, error)),
-        SizedBox(height: 24),
-        ElevatedButton(onPressed: onTryAgainTap, child: Text('Try again')),
+        ElevatedButton(
+          onPressed: onTryAgainTap,
+          child: const Text('Try again'),
+        ),
       ],
     );
   }

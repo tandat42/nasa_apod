@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:nasa_apod/ui/screens/image_viewer/image_viewer_screen.dart';
-
-import '../screens/main/main_screen.dart';
+import 'package:nasa_apod/ui/screens/main/main_screen.dart';
 
 part 'router.g.dart';
 

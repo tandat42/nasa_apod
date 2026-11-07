@@ -19,30 +19,35 @@ void main() {
     apiService = ApiService(mockApiResolver);
   });
 
-  test('getApod() should return Apod data from ApiResolver for today\'s APOD date', () async {
-    // Arrange
-    final apod = Apod(
-      title: 'Galaxy Image',
-      explanation: 'A galaxy far away.',
-      imageUrl: 'https://example.com/image.jpg',
-    );
-    final date = DateUtils.getApodDate();
+  test(
+    'getApod() should return Apod data from ApiResolver for today\'s APOD date',
+    () async {
+      // Arrange
+      final apod = Apod(
+        title: 'Galaxy Image',
+        explanation: 'A galaxy far away.',
+        imageUrl: 'https://example.com/image.jpg',
+      );
+      final date = DateUtils.getApodDate();
 
-    when(mockApiResolver.getApod(date)).thenAnswer((_) async => apod);
+      when(mockApiResolver.getApod(date)).thenAnswer((_) async => apod);
 
-    // Act
-    final result = await apiService.getApod();
+      // Act
+      final result = await apiService.getApod();
 
-    // Assert
-    expect(result, equals(apod));
-    verify(mockApiResolver.getApod(date)).called(1);
-  });
+      // Assert
+      expect(result, equals(apod));
+      verify(mockApiResolver.getApod(date)).called(1);
+    },
+  );
 
   test('getApod() should throw an exception when ApiResolver fails', () async {
     // Arrange
-    when(mockApiResolver.getApod(any)).thenThrow(DioException(
-      requestOptions: RequestOptions(path: '/wp-json/wp/v2/apod-basic'),
-    ));
+    when(mockApiResolver.getApod(any)).thenThrow(
+      DioException(
+        requestOptions: RequestOptions(path: '/wp-json/wp/v2/apod-basic'),
+      ),
+    );
 
     // Act & Assert
     expect(() => apiService.getApod(), throwsA(isA<DioException>()));

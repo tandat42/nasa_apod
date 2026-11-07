@@ -31,7 +31,9 @@ void main() {
       'hdurl': 'https://example.com/image.jpg',
     };
 
-    final requestOptions = RequestOptions(path: '/wp-json/wp/v2/apod-basic/$date');
+    final requestOptions = RequestOptions(
+      path: '/wp-json/wp/v2/apod-basic/$date',
+    );
 
     final response = Response(
       requestOptions: requestOptions,
@@ -39,7 +41,8 @@ void main() {
       statusCode: 200,
     );
 
-    when(mockDio.fetch<Map<String, dynamic>>(any)).thenAnswer((_) async => response);
+    when(mockDio.fetch<Map<String, dynamic>>(any))
+        .thenAnswer((_) async => response);
 
     // Act
     final result = await apiResolver.getApod(date);
@@ -50,14 +53,19 @@ void main() {
     expect(result.explanation, equals('A galaxy far away.'));
     expect(result.imageUrl, equals('https://example.com/image.jpg'));
 
-    final options = verify(mockDio.fetch<Map<String, dynamic>>(captureAny)).captured.single as RequestOptions;
+    final options =
+        verify(mockDio.fetch<Map<String, dynamic>>(captureAny)).captured.single
+            as RequestOptions;
     expect(options.path, equals('/wp-json/wp/v2/apod-basic/$date'));
   });
 
   test('ApiKeyInterceptor should add API key to requests', () async {
     // Arrange
     final interceptor = ApiKeyInterceptor();
-    final options = RequestOptions(path: '/wp-json/wp/v2/apod-basic/$date', queryParameters: {});
+    final options = RequestOptions(
+      path: '/wp-json/wp/v2/apod-basic/$date',
+      queryParameters: {},
+    );
 
     final handler = RequestInterceptorHandler();
 
@@ -66,26 +74,37 @@ void main() {
 
     // Assert
     expect(options.queryParameters.containsKey('api_key'), true);
-    expect(options.queryParameters['api_key'], equals('kGjbFgzNmFJWrFQwmpLPKbhGBWMCTNGjPd7RRTDn'));
-  });
-
-  test('ApiResultExceptionInterceptor should throw ApiException on failure', () async {
-    // Arrange
-    final interceptor = ApiResultExceptionInterceptor();
-    final response = Response(
-      requestOptions: RequestOptions(path: '/wp-json/wp/v2/apod-basic/$date'),
-      statusCode: 500,
+    expect(
+      options.queryParameters['api_key'],
+      equals('kGjbFgzNmFJWrFQwmpLPKbhGBWMCTNGjPd7RRTDn'),
     );
-
-    final handler = ResponseInterceptorHandler();
-
-    // Act & Assert
-    expect(() => interceptor.onResponse(response, handler), throwsA(isA<ApiException>()));
   });
+
+  test(
+    'ApiResultExceptionInterceptor should throw ApiException on failure',
+    () async {
+      // Arrange
+      final interceptor = ApiResultExceptionInterceptor();
+      final response = Response(
+        requestOptions: RequestOptions(path: '/wp-json/wp/v2/apod-basic/$date'),
+        statusCode: 500,
+      );
+
+      final handler = ResponseInterceptorHandler();
+
+      // Act & Assert
+      expect(
+        () => interceptor.onResponse(response, handler),
+        throwsA(isA<ApiException>()),
+      );
+    },
+  );
 
   test('getApod should throw an error on API failure', () async {
     // Arrange
-    final requestOptions = RequestOptions(path: '/wp-json/wp/v2/apod-basic/$date');
+    final requestOptions = RequestOptions(
+      path: '/wp-json/wp/v2/apod-basic/$date',
+    );
 
     when(mockDio.fetch<Map<String, dynamic>>(any))
         .thenThrow(DioException(requestOptions: requestOptions));

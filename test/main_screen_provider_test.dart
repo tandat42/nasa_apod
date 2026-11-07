@@ -47,12 +47,18 @@ void main() {
     verify(mockApiService.getApod()).called(1);
   });
 
-  test('getApod provider should throw an exception when ApiService fails', () async {
-    // Arrange
-    when(mockApiService.getApod()).thenThrow(Exception('API Error'));
+  test(
+    'getApod provider should throw an exception when ApiService fails',
+    () async {
+      // Arrange
+      when(mockApiService.getApod()).thenThrow(Exception('API Error'));
 
-    // Act & Assert
-    expect(() async => await container.read(getApodProvider.future), throwsA(isA<Exception>()));
-    verify(mockApiService.getApod()).called(1);
-  });
+      // Act & Assert
+      expect(
+        () async => await container.read(getApodProvider.future),
+        throwsA(isA<Exception>()),
+      );
+      verify(mockApiService.getApod()).called(1);
+    },
+  );
 }

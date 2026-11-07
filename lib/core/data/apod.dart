@@ -7,7 +7,7 @@ part 'apod.g.dart';
 @Freezed()
 abstract class Apod with _$Apod {
   // ignore: invalid_annotation_target
-  @JsonSerializable(fieldRename: FieldRename.snake)
+  @JsonSerializable(fieldRename: .snake)
   factory Apod({
     required String title,
     required String explanation,

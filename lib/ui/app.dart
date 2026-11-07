@@ -12,10 +12,7 @@ class ApodApp extends StatelessWidget {
       child: MaterialApp.router(
         routerConfig: getIt.get<GoRouter>(),
         title: 'Flutter APOD task',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
+        theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
       ),
     );
   }

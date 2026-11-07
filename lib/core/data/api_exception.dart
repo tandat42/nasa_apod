@@ -1,5 +1,1 @@
-class ApiException {
-  ApiException(this.code);
-
-  final int? code;
-}
+class const ApiException(final int? code) implements Exception;

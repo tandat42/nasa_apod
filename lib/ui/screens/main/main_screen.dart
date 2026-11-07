@@ -52,17 +52,11 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   }
 }
 
-class _MainContentWidget extends StatefulWidget {
-  const _MainContentWidget({
-    required this.apod,
-    required this.onImageTap,
-    required this.onTryAgainTap,
-  });
-
-  final Apod apod;
-  final ImageTapCallback onImageTap;
-  final VoidCallback onTryAgainTap;
-
+class const _MainContentWidget({
+  required final Apod apod,
+  required final ImageTapCallback onImageTap,
+  required final VoidCallback onTryAgainTap,
+}) extends StatefulWidget {
   String? get _imageUrl => apod.imageUrl;
 
   @override
@@ -104,7 +98,7 @@ class _MainContentWidgetState extends State<_MainContentWidget> {
 
   void _getImageSize(ImageProvider provider) {
     final imageUrl = _imageUrl;
-    ImageStream stream = provider.resolve(ImageConfiguration());
+    ImageStream stream = provider.resolve(.empty);
     late final ImageStreamListener imageStreamListener;
     imageStreamListener = ImageStreamListener((ImageInfo info, bool _) {
       final resolvedWidth = info.image.width;
@@ -133,7 +127,7 @@ class _MainContentWidgetState extends State<_MainContentWidget> {
         final imageUrl = _imageUrl;
 
         return ListView(
-          padding: EdgeInsets.fromLTRB(
+          padding: .fromLTRB(
             constraints.maxWidth / 16,
             imageWidgetHeight / 8 + viewPadding.top,
             constraints.maxWidth / 16,
@@ -152,10 +146,7 @@ class _MainContentWidgetState extends State<_MainContentWidget> {
                         return _imageDisplayAllowed
                             ? GestureDetector(
                                 onTap: _onImageTap,
-                                child: Image(
-                                  image: provider,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: Image(image: provider, fit: .cover),
                               )
                             : const ProgressWidget();
                       },
@@ -170,15 +161,15 @@ class _MainContentWidgetState extends State<_MainContentWidget> {
                 : NoImageWidget(onTryAgainTap: widget.onTryAgainTap),
             Expanded(
               child: Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(12),
+                alignment: .center,
+                padding: const .all(12),
                 child: Column(
                   spacing: 12,
                   children: [
                     Text(
                       widget.apod.title,
                       softWrap: true,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                     ),
                     HtmlWidget(widget.apod.explanation),
                   ],

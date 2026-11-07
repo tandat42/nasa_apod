@@ -4,24 +4,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nasa_apod/ui/widgets/platform_selector_widget.dart';
 
-class ImageViewerScreen extends StatelessWidget {
-  const ImageViewerScreen(
-    this.imageUrl, {
-    super.key,
-    required this.width,
-    required this.height,
-  });
-
+class const ImageViewerScreen(
+  final String? imageUrl, {
+  super.key,
+  required final int? width,
+  required final int? height,
+}) extends StatelessWidget {
   static const heroTag = "apod_image";
-
-  final String? imageUrl;
-  final int? width;
-  final int? height;
 
   @override
   Widget build(BuildContext context) {
     if (imageUrl == null || width == null || height == null) {
-      return Material(
+      return const Material(
         child: Center(
           child: Text(
             'Failed to show image, please open page with valid parameters',
@@ -45,17 +39,11 @@ class ImageViewerScreen extends StatelessWidget {
   }
 }
 
-class _ImageViewerMobileContent extends StatelessWidget {
-  const _ImageViewerMobileContent({
-    required this.imageUrl,
-    required this.width,
-    required this.height,
-  });
-
-  final String imageUrl;
-  final int width;
-  final int height;
-
+class const _ImageViewerMobileContent({
+  required final String imageUrl,
+  required final int width,
+  required final int height,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,17 +57,11 @@ class _ImageViewerMobileContent extends StatelessWidget {
   }
 }
 
-class _ImageViewerWebContent extends StatelessWidget {
-  const _ImageViewerWebContent({
-    required this.imageUrl,
-    required this.width,
-    required this.height,
-  });
-
-  final String imageUrl;
-  final int width;
-  final int height;
-
+class const _ImageViewerWebContent({
+  required final String imageUrl,
+  required final int width,
+  required final int height,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,17 +74,11 @@ class _ImageViewerWebContent extends StatelessWidget {
   }
 }
 
-class _ImageViewerContent extends StatelessWidget {
-  const _ImageViewerContent({
-    required this.imageUrl,
-    required this.width,
-    required this.height,
-  });
-
-  final String imageUrl;
-  final int width;
-  final int height;
-
+class const _ImageViewerContent({
+  required final String imageUrl,
+  required final int width,
+  required final int height,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -125,17 +101,17 @@ class _ImageViewerContent extends StatelessWidget {
           minScale: minScale,
           maxScale: maxScale,
           child: Container(
-            alignment: Alignment.center,
+            alignment: .center,
             width: constraints.maxWidth,
             height: constraints.maxHeight,
             child: FittedBox(
-              fit: BoxFit.contain,
+              fit: .contain,
               child: Hero(
                 tag: ImageViewerScreen.heroTag,
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.center,
+                  fit: .cover,
+                  alignment: .center,
                   width: width.toDouble(),
                   height: height.toDouble(),
                 ),
