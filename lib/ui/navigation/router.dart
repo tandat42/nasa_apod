@@ -8,7 +8,7 @@ part 'router.g.dart';
 
 @TypedGoRoute<MainRoute>(path: '/')
 class MainRoute extends GoRouteData with $MainRoute {
-  const MainRoute();
+  const new();
 
   @override
   Widget build(BuildContext context, GoRouterState state) => const MainScreen();
@@ -16,21 +16,14 @@ class MainRoute extends GoRouteData with $MainRoute {
 
 @TypedGoRoute<ImageViewerRoute>(path: '/image_viewer')
 class ImageViewerRoute extends GoRouteData with $ImageViewerRoute {
-  const ImageViewerRoute(
-    this.imageUrl, {
-    required this.width,
-    required this.height,
-  });
+  const new(this.imageUrl, {required this.width, required this.height});
 
   final String? imageUrl;
   final int? width;
   final int? height;
 
   @override
-  CustomTransitionPage<void> buildPage(
-    BuildContext context,
-    GoRouterState state,
-  ) {
+  CustomTransitionPage<void> buildPage(BuildContext context, GoRouterState state) {
     return CustomTransitionPage<void>(
       key: state.pageKey,
       child: ImageViewerScreen(imageUrl, width: width, height: height),

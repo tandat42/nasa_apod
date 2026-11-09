@@ -13,13 +13,10 @@ part 'api_resolver.g.dart';
 @RestApi(baseUrl: 'https://science.nasa.gov')
 abstract class ApiResolver {
   @factoryMethod
-  factory ApiResolver(Dio dio) = _ApiResolver;
+  factory(Dio dio) = _ApiResolver;
 
   @GET('/wp-json/wp/v2/apod-basic')
-  Future<List<Apod>> getApods({
-    @Query('page') int page = 1,
-    @Query('per_page') int perPage = 1,
-  });
+  Future<List<Apod>> getApods({@Query('page') int page = 1, @Query('per_page') int perPage = 1});
 }
 
 @module
@@ -49,7 +46,7 @@ class ApiResultInterceptor extends Interceptor {
   static const _successCode = 200;
 
   @override
-  void onResponse(Response response, ResponseInterceptorHandler handler) {
+  void onResponse(Response<dynamic> response, ResponseInterceptorHandler handler) {
     log('_ApiResultExceptionInterceptor onResponse: $response');
 
     if (response.statusCode != _successCode) {

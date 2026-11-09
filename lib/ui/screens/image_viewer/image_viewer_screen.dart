@@ -6,35 +6,25 @@ import 'package:nasa_apod/ui/widgets/platform_selector_widget.dart';
 
 class const ImageViewerScreen(
   final String? imageUrl, {
-  super.key,
   required final int? width,
   required final int? height,
+  super.key,
 }) extends StatelessWidget {
-  static const heroTag = "apod_image";
+  static const heroTag = 'apod_image';
 
   @override
   Widget build(BuildContext context) {
     if (imageUrl == null || width == null || height == null) {
       return const Material(
-        child: Center(
-          child: Text(
-            'Failed to show image, please open page with valid parameters',
-          ),
-        ),
+        child: Center(child: Text('Failed to show image, please open page with valid parameters')),
       );
     }
 
     return PlatformSelectorWidget(
-      mobileBuilder: (context) => _ImageViewerMobileContent(
-        imageUrl: imageUrl!,
-        width: width!,
-        height: height!,
-      ),
-      webBuilder: (context) => _ImageViewerWebContent(
-        imageUrl: imageUrl!,
-        width: width!,
-        height: height!,
-      ),
+      mobileBuilder: (context) =>
+          _ImageViewerMobileContent(imageUrl: imageUrl!, width: width!, height: height!),
+      webBuilder: (context) =>
+          _ImageViewerWebContent(imageUrl: imageUrl!, width: width!, height: height!),
     );
   }
 }
@@ -48,11 +38,7 @@ class const _ImageViewerMobileContent({
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: _ImageViewerContent(
-        imageUrl: imageUrl,
-        width: width,
-        height: height,
-      ),
+      body: _ImageViewerContent(imageUrl: imageUrl, width: width, height: height),
     );
   }
 }
@@ -65,11 +51,7 @@ class const _ImageViewerWebContent({
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _ImageViewerContent(
-        imageUrl: imageUrl,
-        width: width,
-        height: height,
-      ),
+      body: _ImageViewerContent(imageUrl: imageUrl, width: width, height: height),
     );
   }
 }
@@ -83,18 +65,8 @@ class const _ImageViewerContent({
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final minScale =
-            math.min(
-              constraints.maxWidth / width,
-              constraints.maxHeight / height,
-            ) /
-            2;
-        final maxScale =
-            math.max(
-              width / constraints.maxWidth,
-              height / constraints.maxHeight,
-            ) *
-            4;
+        final minScale = math.min(constraints.maxWidth / width, constraints.maxHeight / height) / 2;
+        final maxScale = math.max(width / constraints.maxWidth, height / constraints.maxHeight) * 4;
 
         return InteractiveViewer(
           constrained: true,

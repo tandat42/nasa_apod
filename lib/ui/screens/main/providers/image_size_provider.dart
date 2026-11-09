@@ -18,9 +18,7 @@ Future<ImageSize?> imageSize(Ref ref, String? url) {
   listener = ImageStreamListener(
     (info, _) {
       stream.removeListener(listener);
-      completer.complete(
-        ImageSize(width: info.image.width, height: info.image.height),
-      );
+      completer.complete(ImageSize(width: info.image.width, height: info.image.height));
       info.dispose();
     },
     onError: (error, stackTrace) {

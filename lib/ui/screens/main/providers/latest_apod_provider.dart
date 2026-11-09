@@ -1,6 +1,6 @@
 import 'package:nasa_apod/core/data/apod.dart';
-import 'package:nasa_apod/di.dart';
 import 'package:nasa_apod/core/services/api_service.dart';
+import 'package:nasa_apod/di.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'latest_apod_provider.g.dart';

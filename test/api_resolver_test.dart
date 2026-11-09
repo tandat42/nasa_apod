@@ -1,7 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:dio/dio.dart';
 import 'package:nasa_apod/core/data/api_exception.dart';
 import 'package:nasa_apod/core/data/apod.dart';
 import 'package:nasa_apod/core/env/env.dart';
@@ -79,7 +79,7 @@ void main() {
     () async {
       // Arrange
       final interceptor = ApiResultInterceptor();
-      final response = Response(
+      final response = Response<dynamic>(
         requestOptions: RequestOptions(path: path),
         statusCode: 500,
       );
@@ -100,7 +100,7 @@ void main() {
     () async {
       // Arrange
       final interceptor = ApiResultInterceptor();
-      final response = Response(
+      final response = Response<dynamic>(
         requestOptions: RequestOptions(path: path),
         statusCode: 200,
       );
@@ -149,7 +149,7 @@ void main() {
 
 class _RecordingResponseHandler extends ResponseInterceptorHandler {
   DioException? rejected;
-  Response? passed;
+  Response<dynamic>? passed;
 
   @override
   void reject(
@@ -160,7 +160,7 @@ class _RecordingResponseHandler extends ResponseInterceptorHandler {
   }
 
   @override
-  void next(Response response) {
+  void next(Response<dynamic> response) {
     passed = response;
   }
 }

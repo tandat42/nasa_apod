@@ -19,7 +19,7 @@ void main() {
     // CachedNetworkImageProvider is keyed by its url, so seeding the image
     // cache makes resolve() return this completer instead of hitting network.
     completer = _ControlledImageStreamCompleter();
-    imageCache.putIfAbsent(CachedNetworkImageProvider(url), () => completer);
+    imageCache.putIfAbsent(const CachedNetworkImageProvider(url), () => completer);
     // The cache attaches its own listener, which must not count as the
     // provider's.
     completer.ignoreCurrentListeners();

@@ -2,7 +2,16 @@
 
 ## About the Project
 
-**nasa_apod** is a test task that shows NASA's Astronomy Picture of the Day (APOD). Entries are fetched from the NASA Science WordPress API at `https://science.nasa.gov/wp-json/wp/v2/apod-basic` (see `lib/core/resolvers/api_resolver.dart`). The app is built with scalability in mind, providing a foundation for future improvements. The UI is implemented in a minimalistic way, focusing on meeting the requirements.
+**nasa_apod** is a test task that shows NASA's Astronomy Picture of the Day (APOD). Entries are fetched from the NASA
+Science WordPress API at `https://science.nasa.gov/wp-json/wp/v2/apod-basic` (see
+`lib/core/resolvers/api_resolver.dart`). The app is built with scalability in mind, providing a foundation for future
+improvements. The UI is implemented in a minimalistic way, focusing on meeting the requirements.
+
+## Supported Platforms
+
+- Android
+- iOS
+- Web
 
 ## Getting Started
 
@@ -14,7 +23,8 @@ A fresh clone won't build as-is: `.env` and all generated files (`*.g.dart`, `*.
    flutter pub get
    ```
 
-2. Create the env file and set your API key (get one at [api.nasa.gov](https://api.nasa.gov/)). The key is sent as the `api_key` query parameter on every request.
+2. Create the env file and set your API key (get one at [api.nasa.gov](https://api.nasa.gov/)). The key is sent as the
+   `api_key` query parameter on every request.
 
    ```sh
    cp .env.example .env
@@ -35,9 +45,11 @@ A fresh clone won't build as-is: `.env` and all generated files (`*.g.dart`, `*.
 
 ## Web Demo
 
-The project is deployed to GitHub Pages: **[tandat42.github.io/nasa_apod/build/web](https://tandat42.github.io/nasa_apod/build/web/)**.
+The project is deployed to GitHub Pages:
+**[tandat42.github.io/nasa_apod/build/web](https://tandat42.github.io/nasa_apod/build/web/)**.
 
-For fast deploy, the `build/web` folder is committed to the repo (it is explicitly un-ignored in `.gitignore`), and GitHub Pages serves it directly from the branch. To update the deployment, rebuild and commit the output:
+For fast deploy, the `build/web` folder is committed to the repo (it is explicitly un-ignored in `.gitignore`), and
+GitHub Pages serves it directly from the branch. To update the deployment, rebuild and commit the output:
 
 ```sh
 flutter build web --release --base-href /nasa_apod/build/web/
@@ -52,6 +64,7 @@ git add build/web && git commit -m "Update web build" && git push
 - **Navigation:** [Go Router](https://pub.dev/packages/go_router)
 - **Code Generation:** [Build Runner](https://pub.dev/packages/build_runner)
 - **Testing:** AI-generated tests that work fine
+- **Linting:** [very_good_analysis](https://pub.dev/packages/very_good_analysis)
 - **Additional Libraries:** The stack contains more small libraries that are not explicitly mentioned.
 
 ## Features
@@ -62,7 +75,6 @@ git add build/web && git commit -m "Update web build" && git push
 
 ## Future Enhancements
 
-- **iOS Setup:** App tested only on Android for now, need to check iOS build.
+- **iOS Setup:** Complete iOS setup to run on a real device.
 - **Localization (l10n):** Move hardcoded texts to a separate file or setup internationalization.
 - **Improved Design:** Enhance UI and implement a consistent theme, setup system assets.
-- **Stricter Linting Rules:** Ensure code quality and best practices are enforced.
